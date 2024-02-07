@@ -9,9 +9,9 @@
 #property strict
 
 input int StdDevPeriods=7;
-input double StdDevValue = 0.0005; // checking above/below value
-input int AlertTimer = 60; //time between alerts in seconds
-input bool isUsingCrossover = false; //only send alerts if ADXValue crossed over
+input double StdDevValue = 0.0004; // checking above/below value
+//input int AlertTimer = 60; //time between alerts in seconds
+input bool isUsingCrossover = true; //only send alerts if ADXValue crossed over
 input bool isSendingNotes=false; //Send phone notifications
 
 datetime TimeOne;
@@ -30,7 +30,7 @@ datetime lastNote;
 int OnInit()
   {
 //--- create timer
-   EventSetTimer(60);
+   //EventSetTimer(60);
    
 //---
    return(INIT_SUCCEEDED);
@@ -41,7 +41,7 @@ int OnInit()
 void OnDeinit(const int reason)
   {
 //--- destroy timer
-   EventKillTimer();
+   //EventKillTimer();
    
   }
 
@@ -56,13 +56,11 @@ void OnDeinit(const int reason)
       //Print("running function");
       int total=StdDevPeriods+1;
       int i = 1;
-      double low = 99;
-      double high = 0;
       datetime time1;
       datetime time2;
       double sD;
       //ObjectCreate(ChartID(),"Bottom "+ Time[i]),OBJ_ARROW_UP,0,Time[i],(Low[i]-0.001));
-      for(int i;i<total;i++)
+      for(i;i<total;i++)
         {
          sD= iStdDev(NULL,0,StdDevPeriods,0,MODE_EMA,PRICE_CLOSE,i+1);
          //Print("stddev:" + sD);
@@ -130,9 +128,9 @@ void OnTick()
        
      else if(Time[1]!=lastNote && curSd<StdDevValue)
      {
-         Print("possible contraction sending alert");
+         //Print("possible contraction sending alert");
          Alert("StdDev= " + NormalizeDouble(curSd,5));
-         if(isSendingNotes==true)SendNotification("ADX= " + NormalizeDouble(curSd,5));
+         if(isSendingNotes==true)SendNotification("StdDev= " + NormalizeDouble(curSd,5));
          lastNote=Time[1];
      }
 
@@ -141,7 +139,7 @@ void OnTick()
 //+------------------------------------------------------------------+
 //| Timer function                                                   |
 //+------------------------------------------------------------------+
-void OnTimer()
+/*void OnTimer()
   {
       double curSd= iStdDev(NULL,0,StdDevPeriods,0,MODE_EMA,PRICE_CLOSE,0);
       double prevSd= iStdDev(NULL,0,StdDevPeriods,0,MODE_EMA,PRICE_CLOSE,1);
@@ -169,7 +167,7 @@ void OnTimer()
          ObjectCreate(ChartID(),"resistance " + DoubleToString(Time[0],8),OBJ_ARROW_CHECK,0,Time[0],Low[0]);
          //SendNotification("ADX= " + NormalizeDouble(CurADX,5));
      }
-  }
+  }*/
    
   
 //+------------------------------------------------------------------+
