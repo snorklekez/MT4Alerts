@@ -8,19 +8,11 @@
 #property version   "1.00"
 #property strict
 
-input int StdDevPeriods=7;
-input double StdDevValue = 0.0004; // checking above/below value
+input int BearLookback=4;
+input int BullLookback=4;
 //input int AlertTimer = 60; //time between alerts in seconds
-input bool isUsingCrossover = true; //only send alerts if ADXValue crossed over
-input bool isSendingNotes=false; //Send phone notifications
-
-datetime TimeOne;
-datetime TimeTwo;
-double PriceOne;
-double PriceTwo;
-bool isHighLineCreated;
-bool isLowLineCreated;
-double low=99;
+input double DoujiTolerance = 1;
+double low=9999;
 double high = 0;
 datetime lastNote;
 
@@ -49,50 +41,7 @@ void OnDeinit(const int reason)
 //| Helper Functions                                                 |
 //+------------------------------------------------------------------+
 
-//this is br0ke
-   void IdentifyConsolidations()
-   {
-      
-      //Print("running function");
-      int total=StdDevPeriods+1;
-      int i = 1;
-      datetime time1;
-      datetime time2;
-      double sD;
-      //ObjectCreate(ChartID(),"Bottom "+ Time[i]),OBJ_ARROW_UP,0,Time[i],(Low[i]-0.001));
-      for(i;i<total;i++)
-        {
-         sD= iStdDev(NULL,0,StdDevPeriods,0,MODE_EMA,PRICE_CLOSE,i+1);
-         //Print("stddev:" + sD);
-         if(sD<=StdDevValue)
-           {
-            total++;
-            time1 = Time[i];
-            //Print(low + " vs " + Low[i]);
-            if(Low[i+1]<low)
-              {
-              
-               low = Low[i+1];
-               Print(low);
-               
-              }
-            if(High[i]>high)
-              {
-               high = High[i+1];
-               
-              }
-              
-           }
-        }
-        time2 = Time[1];
-        if(!ObjectCreate(ChartID(),"Rectangle " + TimeToString(Time[i]),OBJ_RECTANGLE,0,time1,low,time2,high))
-         {
-         Print(GetLastError());
-         }
 
-        
-        
-   }
   
 
 //+------------------------------------------------------------------+
@@ -100,8 +49,8 @@ void OnDeinit(const int reason)
 //+------------------------------------------------------------------+
 void OnTick()
   {
-      double curSd= iStdDev(NULL,0,StdDevPeriods,0,MODE_EMA,PRICE_CLOSE,1);
-      double prevSd= iStdDev(NULL,0,StdDevPeriods,0,MODE_EMA,PRICE_CLOSE,2);
+      double lastOpen = Open1[1];
+      double lastClose= iStdDev(NULL,0,StdDevPeriods,0,MODE_EMA,PRICE_CLOSE,2);
       //bool isFirstAnchorSet;
       //bool isSecondAnchorSet;
 //---
